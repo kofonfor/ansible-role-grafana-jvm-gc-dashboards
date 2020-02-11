@@ -1,0 +1,53 @@
+grafana_jvm_gc_dashboards_grafonnet:
+  - file_name: jvm_gc_info
+    dashboard_name: "GC info"
+    time_from: "now-3h"
+    tags:
+      - jvm
+      - gc
+    templates:
+      - name: "instance"
+        query: "label_values(java_lang_GarbageCollector_LastGcInfo_duration, instance)"
+        label: "Instance"
+        includeAll: "false"
+    panels:
+      - name: "Duration"
+        fill: 0
+        format: "s"
+        span: 6
+        gridpos_x: 0
+        gridpos_y: 0
+        gridpos_w: 24
+        gridpos_h: 7
+        min: 0
+        decimals: 2
+        targets:
+          - expr: 'java_lang_GarbageCollector_LastGcInfo_duration{instance="$instance"}/1000'
+            legend_format: !unsafe "{{name}}"
+      - name: "Count"
+        fill: 0
+        format: "short"
+        span: 6
+        gridpos_x: 0
+        gridpos_y: 0
+        gridpos_w: 24
+        gridpos_h: 7
+        min: 0
+        decimals: 2
+        targets:
+          - expr: 'irate(java_lang_GarbageCollector_CollectionCount{instance="$instance"}[5m])'
+            legend_format: !unsafe "{{name}}"
+      - name: "% of time in GC"
+        fill: 0
+        format: "percent"
+        span: 6
+        gridpos_x: 0
+        gridpos_y: 0
+        gridpos_w: 24
+        gridpos_h: 7
+        decimals: 2
+        min: 0
+        max: 100
+        targets:
+          - expr: 'irate(java_lang_GarbageCollector_CollectionTime{instance="$instance"}[5m])*0.1'
+            legend_format: !unsafe "{{name}}"
